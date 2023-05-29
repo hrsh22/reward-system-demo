@@ -79,10 +79,11 @@ export default function Layout({ title, children }) {
                 )}
               </Link>
 
+              
               {status === 'loading' ? (
                 'Loading'
               ) : session?.user ? (
-                <Menu as="div" className="relative inline-block">
+                <Menu as="div" className="relative inline-block p-6">
                   <Menu.Button className="text-blue-600">
                     {session.user.name}
                   </Menu.Button>
@@ -126,6 +127,17 @@ export default function Layout({ title, children }) {
                   Login
                 </Link>
               )}
+            </div>
+            <div>
+            <Link href='/tokens'>
+                  <div
+                    
+                    className='flex items-center z-10 rounded-full shadow-lg shadow-gray-400 p-3 cursor-pointer hover:scale-105 ease-in duration-300'
+                  >
+                    Tokens
+                  </div>
+                </Link>
+
             </div>
           </nav>
         </header>

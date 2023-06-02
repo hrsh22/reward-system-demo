@@ -1,7 +1,9 @@
 import { signOut, useSession } from 'next-auth/react';
+// import { useState, useEffect } from "react";
 import Head from 'next/head';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { Menu } from '@headlessui/react';
@@ -10,6 +12,16 @@ import { Store } from '../utils/Store';
 import DropdownLink from '../components/DropdownLink';
 import { useRouter } from 'next/router';
 import SearchIcon from '@heroicons/react/24/outline/MagnifyingGlassIcon';
+import '@fortawesome/fontawesome-free/css/all.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+
+
+// faRightFromBracket
+
+
+
+
 
 export default function Layout({ title, children }) {
   const { status, data: session } = useSession();
@@ -17,8 +29,14 @@ export default function Layout({ title, children }) {
   const { state, dispatch } = useContext(Store);
   const { cart } = state;
   const [cartItemsCount, setCartItemsCount] = useState(0);
+  const [address, setAddress] = useState(null);
+  const [userBalance, setUserBalance] = useState(null);
   useEffect(() => {
     setCartItemsCount(cart.cartItems.reduce((a, c) => a + c.quantity, 0));
+    const addr = localStorage.getItem("walletAddress");
+    setAddress(addr);
+    getUserBalance("0x519E5C658d61AeC3369B4289300379ad9b5E7558",addr)
+    fetchData()
   }, [cart.cartItems]);
 
   const logoutClickHandler = () => {
@@ -34,6 +52,99 @@ export default function Layout({ title, children }) {
     e.preventDefault();
     router.push(`/search?query=${query}`);
   };
+
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        alert("Please Install MetaMask");
+        return;
+      }
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      localStorage.setItem("walletAddress", accounts[0]);
+      setAddress(accounts[0]);
+      // router.push("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const disconnectWallet = async () => {
+    localStorage.removeItem("walletAddress");
+  };
+
+  const getUserBalance = async (tokenAddress,userAddress)=>{
+    try {
+      const response = await axios.get(`https://perkvenue.onrender.com/tokens/getDetails/${tokenAddress}/${userAddress}`);
+      // Handle the response data
+      console.log(response.data.userBalance
+        ); // or update state, etc.
+      setUserBalance(response.data.userBalance
+        );
+    } catch (error) {
+      // Handle errors
+      console.error(error);
+    }
+  } 
+
+
+  ////////////////////////////-----------NFTS FUNCTIONS-----------//////////////////////////////////
+  // const [nftList, setNFTList] = useState([]);
+  // const [nftImage, setNFTImage] = useState([]);
+  // const [nftData, setNFTData] = useState([]);
+
+  // const parseURL = async (url) => {
+  //   const ipfsHash = url.slice(7);
+  //   const ipfsURL = `https:/${ipfsHash}`;
+  //   const data = await fetch(ipfsURL);
+  //   const json = await data.json();
+  //   console.log(json);
+  //   return json;
+  // };
+
+  // const getImage = (url) => {
+  //   let image = url;
+  //   image = image.toString();
+  //   console.log(image.slice(7, 66));
+  //   // https://bafyreiearcor5tvq7jiqsmx6teotmcaibqn7k6waqigibnemxzif5pjvsq.ipfs.nftstorage.link/metadata.json
+  //   return "https://" + image.slice(7, 66) + ".ipfs.nftstorage.link/image.jpg";
+  // };
+  // async function fetchData() {
+  //   console.log("Entered fetchData()");
+  //   try {
+  //     const addr = localStorage.getItem("walletAddress");
+
+  //     const response = await axios.get(`https://perkvenue.onrender.com/nfts/details`, {
+  //       params: {
+  //         owner: addr
+  //       }
+  //     });
+  //     console.log("Response:",response);
+  //     console.log(response.data.nfts.length);
+  //     var dataList = [];
+  //     var imgList = [];
+  //     for (var i = 0; i < response.data.nfts.length; i++) {
+  //       var data = await parseURL(response.data.nfts[i].tokenURI);
+  //       var image = getImage(data.image);
+  //       console.log(data);
+  //       dataList.push(data);
+  //       imgList.push(image);
+  //     }
+  //     setNFTList(response.data.nfts);
+  //     setNFTData(dataList);
+  //     console.log(dataList);
+  //     setNFTImage(imgList);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
+
+
+
+  ///////////////////////////////---------------------------------////////////////////////////////
 
   return (
     <>
@@ -130,7 +241,31 @@ export default function Layout({ title, children }) {
           </nav>
         </header>
         
-        <main className="container m-auto mt-4 px-4">{children}
+        <main className="container m-auto mt-4 px-4">
+          <div className="flex justify-center items-center">
+         
+          {address ? (
+          <>
+            <button
+  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full flex items-center"
+  onClick={disconnectWallet}
+>
+  <span className="mr-2">{address}</span>
+  <FontAwesomeIcon icon={faRightFromBracket} className="h-6 w-6" />
+</button>
+           
+          </>
+        ) : (
+          <button
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            // className="bg-[#1E50FF] outline-none border-none py-3 px-5 rounded-xl font-body cursor-pointer  duration-250 ease-in-out hover:transform-x-1 hover:drop-shadow-xl hover:shadow-sky-600 w-full mt-8 transition transform hover:-translate-y-3 motion-reduce:transition-none motion-reduce:hover:transform-none "
+            onClick={connectWallet}
+          >
+            Connect Wallet
+          </button>
+        )}
+          </div>
+          {address ?(
         <div className="w-full rounded-lg shadow-md lg:max-w-sm">
             <img
                 className="object-cover w-100 h-100"
@@ -146,11 +281,16 @@ export default function Layout({ title, children }) {
                     fact that a reader will be distracted by the readable
                     content.
                 </p>
-                {/* <button className="px-4 py-2 text-sm text-blue-100 bg-blue-500 rounded shadow">
-                    Read more
-                </button> */}
+                
+             
+
             </div>
-        </div>
+            <h1>
+                User Balance: {userBalance}
+              </h1>
+        </div>):(<div>
+          Please connect wallet!
+        </div>)}
         </main>
         
         <footer className="flex h-10 justify-center items-center shadow-inner">

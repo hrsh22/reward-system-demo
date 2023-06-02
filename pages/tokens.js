@@ -1,27 +1,22 @@
-import { signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from "next-auth/react";
 // import { useState, useEffect } from "react";
-import Head from 'next/head';
-import Link from 'next/link';
-import Cookies from 'js-cookie';
-import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
-import { ToastContainer } from 'react-toastify';
-import { Menu } from '@headlessui/react';
-import 'react-toastify/dist/ReactToastify.css';
-import { Store } from '../utils/Store';
-import DropdownLink from '../components/DropdownLink';
-import { useRouter } from 'next/router';
-import SearchIcon from '@heroicons/react/24/outline/MagnifyingGlassIcon';
-import '@fortawesome/fontawesome-free/css/all.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-
+import Head from "next/head";
+import Link from "next/link";
+import Cookies from "js-cookie";
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import { Menu } from "@headlessui/react";
+import "react-toastify/dist/ReactToastify.css";
+import { Store } from "../utils/Store";
+import DropdownLink from "../components/DropdownLink";
+import { useRouter } from "next/router";
+import SearchIcon from "@heroicons/react/24/outline/MagnifyingGlassIcon";
+import "@fortawesome/fontawesome-free/css/all.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 // faRightFromBracket
-
-
-
-
 
 export default function Layout({ title, children }) {
   const { status, data: session } = useSession();
@@ -35,17 +30,17 @@ export default function Layout({ title, children }) {
     setCartItemsCount(cart.cartItems.reduce((a, c) => a + c.quantity, 0));
     const addr = localStorage.getItem("walletAddress");
     setAddress(addr);
-    getUserBalance("0x519E5C658d61AeC3369B4289300379ad9b5E7558",addr)
-    fetchData()
+    getUserBalance("0xcA22f8d2316a35919f99c8dd7654f37A4faDdB4C", addr);
+    fetchData();
   }, [cart.cartItems]);
 
   const logoutClickHandler = () => {
-    Cookies.remove('cart');
-    dispatch({ type: 'CART_RESET' });
-    signOut({ callbackUrl: '/login' });
+    Cookies.remove("cart");
+    dispatch({ type: "CART_RESET" });
+    signOut({ callbackUrl: "/login" });
   };
 
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const router = useRouter();
   const submitHandler = (e) => {
@@ -76,80 +71,81 @@ export default function Layout({ title, children }) {
     localStorage.removeItem("walletAddress");
   };
 
-  const getUserBalance = async (tokenAddress,userAddress)=>{
+  const getUserBalance = async (tokenAddress, userAddress) => {
     try {
-      const response = await axios.get(`https://perkvenue.onrender.com/tokens/getDetails/${tokenAddress}/${userAddress}`);
+      const response = await axios.get(
+        `https://perkvenue.onrender.com/tokens/getDetails/${tokenAddress}/${userAddress}`
+      );
       // Handle the response data
-      console.log(response.data.userBalance
-        ); // or update state, etc.
-      setUserBalance(response.data.userBalance
-        );
+      console.log(response.data.userBalance); // or update state, etc.
+      setUserBalance(response.data.userBalance);
     } catch (error) {
       // Handle errors
       console.error(error);
     }
-  } 
-
+  };
 
   ////////////////////////////-----------NFTS FUNCTIONS-----------//////////////////////////////////
-  // const [nftList, setNFTList] = useState([]);
-  // const [nftImage, setNFTImage] = useState([]);
-  // const [nftData, setNFTData] = useState([]);
+  const [nftList, setNFTList] = useState([]);
+  const [nftImage, setNFTImage] = useState([]);
+  const [nftData, setNFTData] = useState([]);
 
-  // const parseURL = async (url) => {
-  //   const ipfsHash = url.slice(7);
-  //   const ipfsURL = `https:/${ipfsHash}`;
-  //   const data = await fetch(ipfsURL);
-  //   const json = await data.json();
-  //   console.log(json);
-  //   return json;
-  // };
+  const parseURL = async (url) => {
+    const ipfsHash = url.slice(7);
+    const ipfsURL = `https:/${ipfsHash}`;
+    const data = await fetch(ipfsURL);
+    const json = await data.json();
+    // console.log(json);
+    return json;
+  };
 
-  // const getImage = (url) => {
-  //   let image = url;
-  //   image = image.toString();
-  //   console.log(image.slice(7, 66));
-  //   // https://bafyreiearcor5tvq7jiqsmx6teotmcaibqn7k6waqigibnemxzif5pjvsq.ipfs.nftstorage.link/metadata.json
-  //   return "https://" + image.slice(7, 66) + ".ipfs.nftstorage.link/image.jpg";
-  // };
-  // async function fetchData() {
-  //   console.log("Entered fetchData()");
-  //   try {
-  //     const addr = localStorage.getItem("walletAddress");
+  const getImage = (url) => {
+    let image = url;
+    image = image.toString();
+    // console.log(image.slice(7, 66));
+    // https://bafyreiearcor5tvq7jiqsmx6teotmcaibqn7k6waqigibnemxzif5pjvsq.ipfs.nftstorage.link/metadata.json
+    return "https://" + image.slice(7, 66) + ".ipfs.nftstorage.link/image.jpg";
+  };
 
-  //     const response = await axios.get(`https://perkvenue.onrender.com/nfts/details`, {
-  //       params: {
-  //         owner: addr
-  //       }
-  //     });
-  //     console.log("Response:",response);
-  //     console.log(response.data.nfts.length);
-  //     var dataList = [];
-  //     var imgList = [];
-  //     for (var i = 0; i < response.data.nfts.length; i++) {
-  //       var data = await parseURL(response.data.nfts[i].tokenURI);
-  //       var image = getImage(data.image);
-  //       console.log(data);
-  //       dataList.push(data);
-  //       imgList.push(image);
-  //     }
-  //     setNFTList(response.data.nfts);
-  //     setNFTData(dataList);
-  //     console.log(dataList);
-  //     setNFTImage(imgList);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
+  async function fetchData() {
+    try {
+      const addr = await localStorage.getItem("walletAddress");
+      console.log(addr);
+      console.log(`https://perkvenue.onrender.com/nfts/details?owner=${addr}`);
+      const response = await axios.get(
+        `https://perkvenue.onrender.com/nfts/details?owner=${addr}`
+      );
 
+      console.log("Response:", response);
+      console.log("Total NFTs:", response.data.length);
 
+      const dataList = [];
+      const imgList = [];
+
+      for (let i = 0; i < response.data.length; i++) {
+        const nft = response.data[i];
+        const data = await parseURL(nft.tokenURI);
+        const image = getImage(data.image);
+
+        // console.log('NFT Data:', data);
+        dataList.push(data);
+        imgList.push(image);
+      }
+
+      setNFTList(response.data);
+      setNFTData(dataList);
+      setNFTImage(imgList);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   ///////////////////////////////---------------------------------////////////////////////////////
 
   return (
     <>
       <Head>
-        <title>{title ? title + ' - Amazona' : 'Amazona'}</title>
+        <title>{title ? title + " - Amazona" : "Amazona"}</title>
         <meta name="description" content="Ecommerce Website" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -190,8 +186,8 @@ export default function Layout({ title, children }) {
                 )}
               </Link>
 
-              {status === 'loading' ? (
-                'Loading'
+              {status === "loading" ? (
+                "Loading"
               ) : session?.user ? (
                 <Menu as="div" className="relative inline-block">
                   <Menu.Button className="text-blue-600">
@@ -240,59 +236,99 @@ export default function Layout({ title, children }) {
             </div>
           </nav>
         </header>
-        
+
         <main className="container m-auto mt-4 px-4">
           <div className="flex justify-center items-center">
-         
-          {address ? (
-          <>
-            <button
-  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full flex items-center"
-  onClick={disconnectWallet}
->
-  <span className="mr-2">{address}</span>
-  <FontAwesomeIcon icon={faRightFromBracket} className="h-6 w-6" />
-</button>
-           
-          </>
-        ) : (
-          <button
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            // className="bg-[#1E50FF] outline-none border-none py-3 px-5 rounded-xl font-body cursor-pointer  duration-250 ease-in-out hover:transform-x-1 hover:drop-shadow-xl hover:shadow-sky-600 w-full mt-8 transition transform hover:-translate-y-3 motion-reduce:transition-none motion-reduce:hover:transform-none "
-            onClick={connectWallet}
-          >
-            Connect Wallet
-          </button>
-        )}
+            {address ? (
+              <>
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full flex items-center"
+                  onClick={disconnectWallet}
+                >
+                  <span className="mr-2">{address}</span>
+                  <FontAwesomeIcon
+                    icon={faRightFromBracket}
+                    className="h-6 w-6"
+                  />
+                </button>
+              </>
+            ) : (
+              <button
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                // className="bg-[#1E50FF] outline-none border-none py-3 px-5 rounded-xl font-body cursor-pointer  duration-250 ease-in-out hover:transform-x-1 hover:drop-shadow-xl hover:shadow-sky-600 w-full mt-8 transition transform hover:-translate-y-3 motion-reduce:transition-none motion-reduce:hover:transform-none "
+                onClick={connectWallet}
+              >
+                Connect Wallet
+              </button>
+            )}
           </div>
-          {address ?(
-        <div className="w-full rounded-lg shadow-md lg:max-w-sm">
-            <img
-                className="object-cover w-100 h-100"
-                src="https://cdn.pixabay.com/photo/2022/08/18/09/20/houses-7394390__340.jpg"
-                alt="image"
-            />
-            <div className="p-4">
-                <h4 className="text-xl font-semibold tracking-tight text-blue-600">
-                    React Tailwind Card with Image
-                </h4>
-                <p className="mb-2 leading-normal">
-                    react tailwind css card with image It is a long established
-                    fact that a reader will be distracted by the readable
-                    content.
-                </p>
-                
-             
+          {address ? (
+            <>
+           <section className="bg-gray-100 py-8">
+  <div className="container mx-auto px-4">
+    <h2 className="text-2xl font-semibold text-gray-800 mb-4">Total Tokens</h2>
+    <div className="flex items-center justify-center">
+      <div className="bg-white shadow-lg rounded-lg p-6">
+        <h3 className="text-4xl font-bold text-blue-600">{userBalance}</h3>
+        <p className="text-gray-600">Tokens Owned</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section className="bg-gray-100 py-8">
+  <div className="container mx-auto px-4">
+    <h2 className="text-2xl font-semibold text-gray-800 mb-4">My NFTs</h2>
+    <div className="grid grid-cols-4 gap-4">
+      {nftList.map((item, key) => (
+        <div key={key} className="flex flex-col items-center bg-white shadow-lg rounded-lg p-6">
+          <img
+            alt="NFT"
+            src={nftImage[key]}
+            className="rounded-10 object-cover w-full h-48"
+          />
+          <div>
+            <h4 className="text-xl font-semibold tracking-tight text-blue-600">
+              {nftData[key].name}
+            </h4>
+            <p className="mb-2 leading-normal">
+              {nftData[key].description}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
-            </div>
-            <h1>
-                User Balance: {userBalance}
-              </h1>
-        </div>):(<div>
-          Please connect wallet!
-        </div>)}
+
+              {/* <h1>User Balance: {userBalance}</h1>
+
+              <div className="grid grid-cols-4 gap-4 mx-20 my-10">
+                {nftList.map((item, key) => (
+                  <div key={key} className="flex flex-col items-center">
+                    <img
+                      alt="NFT"
+                      src={nftImage[key]}
+                      className="rounded-10 object-cover w-full h-48"
+                    />
+                    <div className="p-4">
+                      <h4 className="text-xl font-semibold tracking-tight text-blue-600">
+                        {nftData[key].name}
+                      </h4>
+                      <p className="mb-2 leading-normal">
+                        {nftData[key].description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div> */}
+      
+            </>
+          ) : (
+            <div>Please connect wallet!</div>
+          )}
         </main>
-        
+
         <footer className="flex h-10 justify-center items-center shadow-inner">
           <p>Copyright © 2022 Amazona</p>
         </footer>

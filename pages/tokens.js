@@ -30,7 +30,7 @@ export default function Layout({ title, children }) {
     setCartItemsCount(cart.cartItems.reduce((a, c) => a + c.quantity, 0));
     const addr = localStorage.getItem("walletAddress");
     setAddress(addr);
-    getUserBalance("0x519E5C658d61AeC3369B4289300379ad9b5E7558", addr);
+    getUserBalance("0xcA22f8d2316a35919f99c8dd7654f37A4faDdB4C", addr);
     fetchData();
   }, [cart.cartItems]);
 

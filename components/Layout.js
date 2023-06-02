@@ -10,6 +10,8 @@ import { Store } from '../utils/Store';
 import DropdownLink from './DropdownLink';
 import { useRouter } from 'next/router';
 import SearchIcon from '@heroicons/react/24/outline/MagnifyingGlassIcon';
+import { GiLaurelCrown } from "react-icons/gi";
+
 
 export default function Layout({ title, children }) {
   const { status, data: session } = useSession();
@@ -45,15 +47,15 @@ export default function Layout({ title, children }) {
 
       <ToastContainer position="bottom-center" limit={1} />
 
-      <div className="flex min-h-screen flex-col justify-between ">
+      <div className="flex min-h-screen flex-col justify-end">
         <header>
-          <nav className="flex h-12 items-center px-4 justify-between shadow-md">
+          <nav className="flex h-12 items-center px-4 justify-between shadow-md ">
             <Link href="/" className="text-lg font-bold">
               amazona
             </Link>
             <form
               onSubmit={submitHandler}
-              className="mx-auto  hidden  justify-center md:flex"
+              className="mx-auto  hidden  justify-center  md:flex"
             >
               <input
                 onChange={(e) => setQuery(e.target.value)}
@@ -69,8 +71,8 @@ export default function Layout({ title, children }) {
                 <SearchIcon className="h-5 w-5"></SearchIcon>
               </button>
             </form>
-            <div className="flex items-center z-10">
-              <Link href="/cart" className="p-2">
+            <div className="flex items-center z-10 p-2">
+              <Link href="/cart" className=" ">
                 Cart
                 {cartItemsCount > 0 && (
                   <span className="ml-1 rounded-full bg-red-600 px-2 py-1 text-xs font-bold text-white">
@@ -78,12 +80,12 @@ export default function Layout({ title, children }) {
                   </span>
                 )}
               </Link>
-
-              
+              </div>
+            <div >
               {status === 'loading' ? (
                 'Loading'
               ) : session?.user ? (
-                <Menu as="div" className="relative inline-block p-6">
+                <Menu as="div" className="relative inline-block p-8">
                   <Menu.Button className="text-blue-600">
                     {session.user.name}
                   </Menu.Button>
@@ -128,13 +130,13 @@ export default function Layout({ title, children }) {
                 </Link>
               )}
             </div>
-            <div>
+            <div >
             <Link href='/tokens'>
                   <div
                     
-                    className='flex items-center z-10 rounded-full shadow-lg shadow-gray-400 p-3 cursor-pointer hover:scale-105 ease-in duration-300'
+                    className='flex items-center z-10 h-12'
                   >
-                    Tokens
+                    <GiLaurelCrown size={56}/>
                   </div>
                 </Link>
 

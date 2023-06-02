@@ -18,7 +18,7 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 // faRightFromBracket
 
-export default function Layout({ title, children }) {
+export default function Layout({ title }) {
   const { status, data: session } = useSession();
 
   const { state, dispatch } = useContext(Store);

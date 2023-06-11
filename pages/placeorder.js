@@ -14,6 +14,30 @@ export default function PlaceOrderScreen() {
   const { state, dispatch } = useContext(Store);
   const { cart } = state;
   const { cartItems, shippingAddress, paymentMethod } = cart;
+  const [address, setAddress] = useState(null);
+  const [userBalance, setUserBalance] = useState(null);
+  useEffect(() => {
+    const addr = localStorage.getItem("walletAddress");
+    setAddress(addr);
+    getUserBalance("0xcA22f8d2316a35919f99c8dd7654f37A4faDdB4C", addr);
+
+  },);
+  
+
+  const getUserBalance = async (tokenAddress, userAddress) => {
+    try {
+      const response = await axios.get(
+        `https://perkvenue.onrender.com/tokens/getDetails/${tokenAddress}/${userAddress}`
+      );
+      // Handle the response data
+      console.log(response.data.userBalance); // or update state, etc.
+      setUserBalance(response.data.userBalance);
+    } catch (error) {
+      // Handle errors
+      console.error(error);
+    }
+  };
+
 
   const round2 = (num) => Math.round(num * 100 + Number.EPSILON) / 100;
 
@@ -24,6 +48,10 @@ export default function PlaceOrderScreen() {
   const shippingPrice = itemsPrice > 200 ? 0 : 15;
   const taxPrice = round2(itemsPrice * 0.15);
   const totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+  const tokenUse=Math.floor(userBalance*0.1)
+  const totalPriceWithToken = round2(totalPrice-tokenUse);
+  const result= tokenUse < 1 ? true : false;
+  console.log(result)
 
   const router = useRouter();
   useEffect(() => {
@@ -37,6 +65,72 @@ export default function PlaceOrderScreen() {
   const placeOrderHandler = async () => {
     try {
       setLoading(true);
+      const data0 =       {
+        "tokenAddress": "0xcA22f8d2316a35919f99c8dd7654f37A4faDdB4C",
+        "accountAddress": address,
+        "amount": Math.floor(totalPrice*0.1)
+      }
+      
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          
+        }
+      };
+
+
+      const response = await axios.post('https://perkvenue.onrender.com/tokens/mint/', JSON.stringify(data0),config);
+      console.log(response.data.mintingDetails)
+      const { data } = await axios.post('/api/orders', {
+        orderItems: cartItems,
+        shippingAddress,
+        paymentMethod,
+        itemsPrice,
+        shippingPrice,
+        taxPrice,
+        totalPrice,
+      });
+      setLoading(false);
+      dispatch({ type: 'CART_CLEAR_ITEMS' });
+      Cookies.set(
+        'cart',
+        JSON.stringify({
+          ...cart,
+          cartItems: [],
+        })
+      );
+      router.push(`/order/${data._id}`);
+    } catch (err) {
+      setLoading(false);
+      toast.error(getError(err));
+    }
+  };
+
+  const placeOrderHandlerToken = async () => {
+    try {
+      setLoading(true);
+      const data0 =       {
+        "tokenAddress": "0xcA22f8d2316a35919f99c8dd7654f37A4faDdB4C",
+        "accountAddress": address,
+        "amount": Math.floor(totalPrice*0.1)
+      }
+      
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          
+        }
+      };
+      const data1 =       {
+        "tokenAddress": "0xcA22f8d2316a35919f99c8dd7654f37A4faDdB4C",
+        "accountAddress": address,
+        "amount": tokenUse
+      }
+
+      const response = await axios.post('https://perkvenue.onrender.com/tokens/mint/', JSON.stringify(data0),config);
+      const response1= await axios.post('https://perkvenue.onrender.com/tokens/burn/', JSON.stringify(data1),config);
+      console.log(response.data.mintingDetails)
+      console.log(response1.data.burningDetails)
       const { data } = await axios.post('/api/orders', {
         orderItems: cartItems,
         shippingAddress,
@@ -163,6 +257,12 @@ export default function PlaceOrderScreen() {
                     <div>${totalPrice}</div>
                   </div>
                 </li>
+                {/* <li>
+                  <div className="mb-2 flex justify-between">
+                    <div>Tokens</div>
+                    <div>${totalPrice}</div>
+                  </div>
+                </li> */}
                 <li>
                   <button
                     disabled={loading}
@@ -174,6 +274,34 @@ export default function PlaceOrderScreen() {
                 </li>
               </ul>
             </div>
+            <div className="card  p-5">
+              <h2 className="mb-2 text-lg">Place Order Using Tokens</h2>
+              <ul>
+                <li>
+                  <div className="mb-2 flex justify-between">
+                    <div>Tokens</div>
+                    <div>{userBalance}</div>
+                  </div>
+                </li>               
+                <li>
+                  <div className="mb-2 flex justify-between">
+                    <div>Total With Tokens</div>
+                    <div>${totalPriceWithToken}</div>
+                  </div>
+                </li>
+            
+                <li>
+                  <button
+                    disabled={result}
+                    onClick={placeOrderHandlerToken}
+                    className="primary-button w-full"
+                  >
+                    {loading ? 'Loading...' : 'Place Order'}
+                  </button>
+                </li>
+              </ul>
+            </div>
+
           </div>
         </div>
       )}

@@ -150,33 +150,15 @@ export default function Layout({ title }) {
   }
 })}
 
-  const quickmint = async () => {
-    try {
-    const data = {
-      "name": "My Awesome NFT 500",
-      "description": "This is an awesome NFT which yo get after purchasing 500$ worth of Stuff",
-      "image_url": "https://example.com/my-nft.png",
-      "addressTo": address
-      }
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-          
-        }
-      }
-      const response = await axios.post('https://perkvenue.onrender.com/nft/quickmint', JSON.stringify(data),config);
-      console.log(response.data.mintingDetails)
-  }
-  catch (error) {
-    console.error(error);
-  }
+  
   
   const quickmint = async () => {
     try {
+      
     const data = {
       "name": "My Awesome NFT 500",
       "description": "This is an awesome NFT which yo get after purchasing 500$ worth of Stuff",
-      "image_url": "https://example.com/my-nft.png",
+      "image": "https://mcdn.wallpapersafari.com/medium/62/26/UGdNBx.jpg",
       "addressTo": address
       }
       const config = {
@@ -184,12 +166,8 @@ export default function Layout({ title }) {
           'Content-Type': 'application/json',
         }
       }
-      const response = await axios.post('https://perkvenue.onrender.com/nft/quickmint', JSON.stringify(data),config);
-      const data2 = await response.json();
-      console.log(data2);
-      const tokenId = data2.tokenId;
-      console.log(tokenId);
-      alert(`NFT minted! Token ID: ${tokenId}`);
+      const response = await axios.post('https://perkvenue.onrender.com/nfts/quickmint', JSON.stringify(data),config);
+      console.log(response.nftdetails);
   }
   catch (error) {
     console.error(error);
@@ -198,6 +176,7 @@ export default function Layout({ title }) {
 
        if (totalOrderAmount >=500){
         quickmint();
+        console.log("minted")
        }
         
 
@@ -212,9 +191,7 @@ export default function Layout({ title }) {
   //   };
 
 
-    const response = await axios.post('https://perkvenue.onrender.com/nft/quickmint', JSON.stringify(data0),config);
-    console.log(response.data.mintingDetails)
-  }
+    
 
   async function fetchData() {
     try {

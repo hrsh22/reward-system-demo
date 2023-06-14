@@ -4,7 +4,7 @@ import Head from "next/head";
 import Link from "next/link";
 import Cookies from "js-cookie";
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState,useReducer } from "react";
 import { ToastContainer } from "react-toastify";
 import { Menu } from "@headlessui/react";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,6 +15,7 @@ import SearchIcon from "@heroicons/react/24/outline/MagnifyingGlassIcon";
 import "@fortawesome/fontawesome-free/css/all.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { getError } from "../utils/error";
 
 // faRightFromBracket
 
@@ -106,6 +107,114 @@ export default function Layout({ title }) {
     // https://bafyreiearcor5tvq7jiqsmx6teotmcaibqn7k6waqigibnemxzif5pjvsq.ipfs.nftstorage.link/metadata.json
     return "https://" + image.slice(7, 66) + ".ipfs.nftstorage.link/image.jpg";
   };
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'FETCH_REQUEST':
+        return { ...state, loading: true, error: '' };
+      case 'FETCH_SUCCESS':
+        return { ...state, loading: false, orders: action.payload, error: '' };
+      case 'FETCH_FAIL':
+        return { ...state, loading: false, error: action.payload };
+      default:
+        state;
+    }
+  }
+  
+  
+    const [{ loading, error, orders }, dispatch1] = useReducer(reducer, {
+      loading: true,
+      orders: [],
+      error: '',
+    });
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          dispatch1({ type: 'FETCH_REQUEST' });
+          const { data } = await axios.get(`/api/admin/sunOfOrders`);
+          dispatch1({ type: 'FETCH_SUCCESS', payload: data });
+        } catch (err) {
+          dispatch1({ type: 'FETCH_FAIL', payload: getError(err) });
+        }
+      };
+      fetchData();
+    }, []);
+  
+    
+    let totalOrderAmount = 0;
+
+  {orders.map((order) => {
+  if (order.user && order.user.name === session.user.name) {
+    totalOrderAmount += order.totalPrice;
+  }
+})}
+
+  const quickmint = async () => {
+    try {
+    const data = {
+      "name": "My Awesome NFT 500",
+      "description": "This is an awesome NFT which yo get after purchasing 500$ worth of Stuff",
+      "image_url": "https://example.com/my-nft.png",
+      "addressTo": address
+      }
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+          
+        }
+      }
+      const response = await axios.post('https://perkvenue.onrender.com/nft/quickmint', JSON.stringify(data),config);
+      console.log(response.data.mintingDetails)
+  }
+  catch (error) {
+    console.error(error);
+  }
+  
+  const quickmint = async () => {
+    try {
+    const data = {
+      "name": "My Awesome NFT 500",
+      "description": "This is an awesome NFT which yo get after purchasing 500$ worth of Stuff",
+      "image_url": "https://example.com/my-nft.png",
+      "addressTo": address
+      }
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+      const response = await axios.post('https://perkvenue.onrender.com/nft/quickmint', JSON.stringify(data),config);
+      const data2 = await response.json();
+      console.log(data2);
+      const tokenId = data2.tokenId;
+      console.log(tokenId);
+      alert(`NFT minted! Token ID: ${tokenId}`);
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+
+       if (totalOrderAmount >=500){
+        quickmint();
+       }
+        
+
+  // if (totalOrderAmount >=500){
+  //   const data0 =       {
+  //     "tokenAddress": "0xcA22f8d2316a35919f99c8dd7654f37A4faDdB4C",
+  //     "accountAddress": address,
+  //     "amount": Math.floor(totalPrice*0.1)
+  //   }
+    
+    
+  //   };
+
+
+    const response = await axios.post('https://perkvenue.onrender.com/nft/quickmint', JSON.stringify(data0),config);
+    console.log(response.data.mintingDetails)
+  }
 
   async function fetchData() {
     try {
@@ -266,6 +375,12 @@ export default function Layout({ title }) {
             <>
            <section className="bg-gray-100 py-8">
   <div className="container mx-auto px-4">
+  <h2 className="text-2xl font-semibold text-gray-800 mb-4">Total Order Value</h2>
+    <div className="flex items-center justify-center">
+      <div className="bg-white shadow-lg rounded-lg p-6">
+        <h3 className="text-4xl font-bold text-blue-600">${totalOrderAmount}</h3>
+      </div>
+    </div>
     <h2 className="text-2xl font-semibold text-gray-800 mb-4">Total Tokens</h2>
     <div className="flex items-center justify-center">
       <div className="bg-white shadow-lg rounded-lg p-6">

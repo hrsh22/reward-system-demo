@@ -91,13 +91,34 @@ export default function Layout({ title }) {
   const [nftImage, setNFTImage] = useState([]);
   const [nftData, setNFTData] = useState([]);
 
+  // const parseURL = async (url) => {
+  //   const ipfsHash = url.slice(7);
+  //   const ipfsURL = `https:/${ipfsHash}`;
+  //   const data = await fetch(ipfsURL);
+  //   const json = await data.json();
+  //   // console.log(json);
+  //   return json;
+  // };
   const parseURL = async (url) => {
-    const ipfsHash = url.slice(7);
-    const ipfsURL = `https:/${ipfsHash}`;
-    const data = await fetch(ipfsURL);
-    const json = await data.json();
-    // console.log(json);
-    return json;
+    try {
+
+      console.log('url', url)
+      const ipfsHash = url.slice(24);
+
+      console.log('ipfsHash', ipfsHash)
+      const ipfsURL = `https://ipfs.io/${ipfsHash}`;
+      const response = await fetch(ipfsURL);
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch IPFS data');
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('An error occurred while parsing the URL:', error);
+      throw error;
+    }
   };
 
   const getImage = (url) => {
@@ -202,7 +223,9 @@ if (totalOrderAmount >= 500 && !nftCreated) { // Check if order amount is suffic
 
       for (let i = 0; i < response.data.length; i++) {
         const nft = response.data[i];
+        console.log("1")
         const data = await parseURL(nft.tokenURI);
+        console.log("2")
         const image = getImage(data.image);
 
         // console.log('NFT Data:', data);

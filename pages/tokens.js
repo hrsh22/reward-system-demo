@@ -122,10 +122,10 @@ export default function Layout({ title }) {
   }
   
   
-    const [{ loading, error, orders }, dispatch1] = useReducer(reducer, {
-      loading: true,
+    const [{  orders }, dispatch1] = useReducer(reducer, {
+      
       orders: [],
-      error: '',
+     
     });
   
     useEffect(() => {

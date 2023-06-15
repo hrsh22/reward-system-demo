@@ -174,22 +174,14 @@ export default function Layout({ title }) {
   }
 }
 
-       if (totalOrderAmount >=500){
-        quickmint();
-        console.log("minted")
-       }
+let nftCreated = false; // Initialize a flag to track NFT creation
+
+if (totalOrderAmount >= 500 && !nftCreated) { // Check if order amount is sufficient and NFT is not already created
+  quickmint();
+  console.log("NFT minted");
+  nftCreated = true; // Set the flag to indicate NFT creation
+}
         
-
-  // if (totalOrderAmount >=500){
-  //   const data0 =       {
-  //     "tokenAddress": "0xcA22f8d2316a35919f99c8dd7654f37A4faDdB4C",
-  //     "accountAddress": address,
-  //     "amount": Math.floor(totalPrice*0.1)
-  //   }
-    
-    
-  //   };
-
 
     
 
@@ -217,6 +209,8 @@ export default function Layout({ title }) {
         dataList.push(data);
         imgList.push(image);
       }
+      console.log("NFT Data:", dataList);
+      console.log("NFT Image:", imgList);
 
       setNFTList(response.data);
       setNFTData(dataList);

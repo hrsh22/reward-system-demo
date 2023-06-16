@@ -40,9 +40,9 @@ export default function Layout({ title, children }) {
   return (
     <>
       <Head>
-        <title>{title ? title + ' - Amazona' : 'Amazona'}</title>
+        <title>{title ? title + ' - The Krusty Krab' : 'The Krusty Krab'}</title>
         <meta name="description" content="Ecommerce Website" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/kkicon.jpeg" />
       </Head>
 
       <ToastContainer position="bottom-center" limit={1} />
@@ -51,7 +51,7 @@ export default function Layout({ title, children }) {
         <header>
           <nav className="flex h-12 items-center px-4 justify-between shadow-md ">
             <Link href="/" className="text-lg font-bold">
-              amazona
+              The Krusty Krab
             </Link>
             <form
               onSubmit={submitHandler}
@@ -145,7 +145,7 @@ export default function Layout({ title, children }) {
         </header>
         <main className="container m-auto mt-4 px-4">{children}</main>
         <footer className="flex h-10 justify-center items-center shadow-inner">
-          <p>Copyright © 2022 Amazona</p>
+          <p>Copyright © 2022 The Krusty Krab</p>
         </footer>
       </div>
     </>

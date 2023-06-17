@@ -221,7 +221,7 @@ export default function Layout({ title }) {
       else {
          alreadyminted=false;
       }
-      if (totalOrderAmount >= 500 && x==true) { // Check if order amount is sufficient and NFT is not already created
+      if (totalOrderAmount >= 500 && alreadyminted==true) { // Check if order amount is sufficient and NFT is not already created
         quickmint();
         console.log("NFT minted");
         

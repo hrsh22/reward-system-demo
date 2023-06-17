@@ -102,10 +102,10 @@ export default function Layout({ title }) {
   const parseURL = async (url) => {
     try {
 
-      console.log('url', url)
+      // console.log('url', url)
       const ipfsHash = url.slice(24);
 
-      console.log('ipfsHash', ipfsHash)
+      // console.log('ipfsHash', ipfsHash)
       const ipfsURL = `https://ipfs.io/${ipfsHash}`;
       const response = await fetch(ipfsURL);
   
@@ -196,32 +196,9 @@ export default function Layout({ title }) {
 }
 
 
-const alreadyMinted = async () => { // Check if NFT is already created
-  try {
-    const response = await axios.get(
-      `https://perkvenue.onrender.com/nfts/details?owner=${address}&tokenURI="https://nftstorage.link/ipfs/bafyreieobe5vph63qbplwoz4r57nocqtrxnrxicqnx47zckxhtx74hmas4/metadata.json"`   );
-    console.log("Response55:", response);
-    console.log("Total NFTss:", response.data.length);
-    console.log(`https://perkvenue.onrender.com/nfts/details?owner=${address}&tokenURI="https://nftstorage.link/ipfs/bafyreieobe5vph63qbplwoz4r57nocqtrxnrxicqnx47zckxhtx74hmas4/metadata.json"`);
-    if (response.data.length > 0) {
-      return true;
-    }
-    else {
-      return false;
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
 
-let x=alreadyMinted();
 
-if (totalOrderAmount >= 500 && x===false) { // Check if order amount is sufficient and NFT is not already created
-quickmint();
-console.log("NFT minted");
 
-}
-    
 
     
 
@@ -229,11 +206,30 @@ console.log("NFT minted");
     try {
       const addr = await localStorage.getItem("walletAddress");
       console.log(addr);
-      console.log(`https://perkvenue.onrender.com/nfts/details?owner=${addr}`);
+      console.log(`https://perkvenue.onrender.com/nfts/details?owner=${addr}&tokenURI=https://nftstorage.link/ipfs/bafyreieobe5vph63qbplwoz4r57nocqtrxnrxicqnx47zckxhtx74hmas4/metadata.json`);
       const response = await axios.get(
         `https://perkvenue.onrender.com/nfts/details?owner=${addr}`
       );
-
+    
+      const response1 = await axios.get(
+        `https://perkvenue.onrender.com/nfts/details?owner=${addr}&tokenURI=https://nftstorage.link/ipfs/bafyreieobe5vph63qbplwoz4r57nocqtrxnrxicqnx47zckxhtx74hmas4/metadata.json`
+      );
+      if (response1.data.length == 0) {
+        var x=true;
+      }
+      else {
+        var x=false;
+      }
+      if (totalOrderAmount >= 500 && x==true) { // Check if order amount is sufficient and NFT is not already created
+        quickmint();
+        console.log("NFT minted");
+        
+        }
+        else{
+          console.log("Not minted")
+        }
+            
+    
       console.log("Response:", response);
       console.log("Total NFTs:", response.data.length);
 
@@ -242,9 +238,9 @@ console.log("NFT minted");
 
       for (let i = 0; i < response.data.length; i++) {
         const nft = response.data[i];
-        console.log("1")
+        // console.log("1")
         const data = await parseURL(nft.tokenURI);
-        console.log("2")
+        // console.log("2")
         const image = getImage(data.image);
 
         // console.log('NFT Data:', data);

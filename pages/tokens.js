@@ -195,14 +195,33 @@ export default function Layout({ title }) {
   }
 }
 
-let nftCreated = false; // Initialize a flag to track NFT creation
 
-if (totalOrderAmount >= 500 && !nftCreated) { // Check if order amount is sufficient and NFT is not already created
-  quickmint();
-  console.log("NFT minted");
-  nftCreated = true; // Set the flag to indicate NFT creation
+const alreadyMinted = async () => { // Check if NFT is already created
+  try {
+    const response = await axios.get(
+      `https://perkvenue.onrender.com/nfts/details?owner=${address}&tokenURI="https://nftstorage.link/ipfs/bafyreieobe5vph63qbplwoz4r57nocqtrxnrxicqnx47zckxhtx74hmas4/metadata.json"`   );
+    console.log("Response55:", response);
+    console.log("Total NFTss:", response.data.length);
+    console.log(`https://perkvenue.onrender.com/nfts/details?owner=${address}&tokenURI="https://nftstorage.link/ipfs/bafyreieobe5vph63qbplwoz4r57nocqtrxnrxicqnx47zckxhtx74hmas4/metadata.json"`);
+    if (response.data.length > 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+let x=alreadyMinted();
+
+if (totalOrderAmount >= 500 && x===false) { // Check if order amount is sufficient and NFT is not already created
+quickmint();
+console.log("NFT minted");
+
 }
-        
+    
 
     
 

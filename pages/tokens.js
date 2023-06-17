@@ -214,11 +214,12 @@ export default function Layout({ title }) {
       const response1 = await axios.get(
         `https://perkvenue.onrender.com/nfts/details?owner=${addr}&tokenURI=https://nftstorage.link/ipfs/bafyreieobe5vph63qbplwoz4r57nocqtrxnrxicqnx47zckxhtx74hmas4/metadata.json`
       );
+      var alreadyminted=false
       if (response1.data.length == 0) {
-        var x=true;
+         alreadyminted=true;
       }
       else {
-        var x=false;
+         alreadyminted=false;
       }
       if (totalOrderAmount >= 500 && x==true) { // Check if order amount is sufficient and NFT is not already created
         quickmint();
